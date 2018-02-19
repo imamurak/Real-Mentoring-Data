@@ -1,11 +1,19 @@
 getwd()
 
-FY16data <- read.csv("ClientDemoGraphicsFY16Chp1000.csv")
-FY17data <- read.csv("ClientDemoGraphicsFY17Chp1000.csv")
+# Treat zipcode as string for NJ & CT zip codes
 
+FY16data <- read.csv("ClientDemoGraphicsFY16-Priv.csv", colClasses=c("cl_locatoin_zipcode"="character"))
+FY17data <- read.csv("ClientDemoGraphicsFY17-Priv.csv", colClasses=c("cl_locatoin_zipcode"="character"))
+
+ncol(FY16data)
+nrow(FY16data)
 summary(FY16data)
+
+# Structure for the entire data frame
 str(FY16data, list.len=ncol(FY16data))
 
+ncol(FY17data)
+nrow(FY17data)
 summary(FY17data)
 str(FY17data, list.len=ncol(FY17data))
 
@@ -31,3 +39,7 @@ levels(FY17data$cl_ethnicity_value)
 levels(FY17data$cl_legalentity_value)
 levels(FY17data$cl_legalentity_other_value)
 
+county <- read.csv("county_table.csv", colClasses=c("zip_prefix"="character"))
+str(county)
+hood <- read.csv("zip_table.csv", colClasses=c("zip"="character"))
+str(hood)
