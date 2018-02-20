@@ -1,19 +1,19 @@
 getwd()
 
+library(dplyr)
+
 # Treat zipcode as string for NJ & CT zip codes
 
-FY16data <- read.csv("ClientDemoGraphicsFY16-Priv.csv", colClasses=c("cl_locatoin_zipcode"="character"))
-FY17data <- read.csv("ClientDemoGraphicsFY17-Priv.csv", colClasses=c("cl_locatoin_zipcode"="character"))
+FY16data <- read.csv("ClientDemoGraphicsFY16-Priv.csv", colClasses=c("cl_location_zipcode"="character"))
+FY17data <- read.csv("ClientDemoGraphicsFY17-Priv.csv", colClasses=c("cl_location_zipcode"="character"))
 
-ncol(FY16data)
-nrow(FY16data)
+dim(FY16data)
 summary(FY16data)
 
 # Structure for the entire data frame
 str(FY16data, list.len=ncol(FY16data))
 
-ncol(FY17data)
-nrow(FY17data)
+dim(FY17data)
 summary(FY17data)
 str(FY17data, list.len=ncol(FY17data))
 
@@ -43,3 +43,37 @@ county <- read.csv("county_table.csv", colClasses=c("zip_prefix"="character"))
 str(county)
 hood <- read.csv("zip_table.csv", colClasses=c("zip"="character"))
 str(hood)
+
+# Function to determine no variance
+noVar <- function(x){
+  return(length(unique(x))==1)
+}
+
+# temp <- apply(FY16data, 2, noVar)
+# temp
+# is.vector(temp)
+# FY16noVar <- FY16data[, !temp]
+
+# Get rid of columns that has no variance
+
+FY16var <- FY16data[, !apply(FY16data, 2, noVar)]
+dim(FY16var)
+
+FY17var <- FY17data[, !apply(FY17data, 2, noVar)]
+dim(FY17var)
+
+# Add columns for county, neighborhood, borough
+
+FY16var$cl_location_zipcode_prefix <- substr(FY16var$cl_location_zipcode, 1, 3)
+ncol(FY16var)
+FY16var <- merge(FY16var, county, by.x="cl_location_zipcode_prefix", by.y="zip_prefix", all.x=TRUE)
+ncol(FY16var)
+FY16var <- merge(FY16var, hood, by.x="cl_location_zipcode", by.y="zip", all.x=TRUE)
+ncol(FY16var)
+
+FY17var$cl_location_zipcode_prefix <- substr(FY17var$cl_location_zipcode, 1, 3)
+ncol(FY17var)
+FY17var <- merge(FY17var, county, by.x="cl_location_zipcode_prefix", by.y="zip_prefix", all.x=TRUE)
+ncol(FY17var)
+FY17var <- merge(FY17var, hood, by.x="cl_location_zipcode", by.y="zip", all.x=TRUE)
+ncol(FY17var)
