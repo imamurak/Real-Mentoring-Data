@@ -39,10 +39,10 @@ levels(FY17data$cl_ethnicity_value)
 levels(FY17data$cl_legalentity_value)
 levels(FY17data$cl_legalentity_other_value)
 
-county <- read.csv("county_table.csv", colClasses=c("zip_prefix"="character"))
-str(county)
-hood <- read.csv("zip_table.csv", colClasses=c("zip"="character"))
-str(hood)
+# county <- read.csv("county_table.csv", colClasses=c("zip_prefix"="character"))
+# str(county)
+# hood <- read.csv("zip_table.csv", colClasses=c("zip"="character"))
+# str(hood)
 
 # Function to determine no variance
 noVar <- function(x){
@@ -64,16 +64,61 @@ dim(FY17var)
 
 # Add columns for county, neighborhood, borough
 
-FY16var$cl_location_zipcode_prefix <- substr(FY16var$cl_location_zipcode, 1, 3)
-ncol(FY16var)
-FY16var <- merge(FY16var, county, by.x="cl_location_zipcode_prefix", by.y="zip_prefix", all.x=TRUE)
-ncol(FY16var)
-FY16var <- merge(FY16var, hood, by.x="cl_location_zipcode", by.y="zip", all.x=TRUE)
-ncol(FY16var)
+# FY16var$cl_location_zip_prefix <- substr(FY16var$cl_location_zipcode, 1, 3)
+# dim(FY16var)
+# FY16var <- merge(FY16var, county, by.x="cl_location_zip_prefix", by.y="zip_prefix", all.x=TRUE)
+# dim(FY16var)
+# FY16var <- merge(FY16var, hood, by.x="cl_location_zipcode", by.y="zip", all.x=TRUE)
+# dim(FY16var)
 
-FY17var$cl_location_zipcode_prefix <- substr(FY17var$cl_location_zipcode, 1, 3)
-ncol(FY17var)
-FY17var <- merge(FY17var, county, by.x="cl_location_zipcode_prefix", by.y="zip_prefix", all.x=TRUE)
-ncol(FY17var)
-FY17var <- merge(FY17var, hood, by.x="cl_location_zipcode", by.y="zip", all.x=TRUE)
-ncol(FY17var)
+
+# FY17var$cl_location_zipcode_prefix <- substr(FY17var$cl_location_zipcode, 1, 3)
+# dim(FY17var)
+# FY17var <- merge(FY17var, county, by.x="cl_location_zipcode_prefix", by.y="zip_prefix", all.x=TRUE)
+# dim(FY17var)
+# FY17var <- merge(FY17var, hood, by.x="cl_location_zipcode", by.y="zip", all.x=TRUE)
+# dim(FY17var)
+
+str(FY16var, list.len=ncol(FY16var))
+summary(FY16var)
+
+str(FY17var, list.len=ncol(FY17var))
+summary(FY17var)
+
+# Remove columns that are not relevant
+
+FY16eval <- FY16var
+FY17eval <- FY17var
+
+# ----------------------------------------------------
+
+# Remove rows with zipecode="NULL"
+FY16eval$cl_location_zipcode=="NULL"
+sum(FY16eval$cl_location_zipcode=="NULL")
+
+FY16eval <- FY16eval[!FY16eval$cl_location_zipcode=="NULL", ]
+dim(FY16eval)
+
+# Duplicate column as se_chapter_loc_name
+FY16eval$se_node_title <- NULL
+
+# Data entry code (vs. description)
+FY16eval$se_event_type_value <- NULL
+FY16eval$se_chapter_loc_nid <- NULL
+FY16eval$cl_business_type_code <- NULL
+FY16eval$cl_hear_about_score_code <- NULL
+
+# Exclude se_session_type "Close Out" or "Non-Session"
+sum(FY16eval$se_session_type=="Close Out")
+sum(FY16eval$se_session_type=="Non-Session")
+FY16eval <- FY16eval[!(FY16eval$se_session_type=="Close Out" | FY16eval$se_session_type=="Non-Session"), ]
+dim(FY16eval)
+
+# Exclude se_event_type_desc "None" or "Update"
+sum(FY16eval$se_event_type_desc=="None")
+sum(FY16eval$se_event_type_desc=="Update")
+FY16eval <- FY16eval[!(FY16eval$se_event_type_desc=="None" | FY16eval$se_event_type_desc=="Update"), ]
+dim(FY16eval)
+
+# ----------------------------------------------------
+
