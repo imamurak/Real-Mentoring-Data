@@ -133,6 +133,7 @@ length(unique(FY16eval$se_nid))
 
 # Total number of unique clients
 length(unique(FY16eval$se_client_nid))
+length(unique(FY16eval$cl_nid))
 
 # Total number of mentoring hours for all counselors involved
 sum(FY16eval$se_hours_spent_total)
@@ -142,72 +143,127 @@ sum(FY16eval$se_hours_spent)
 
 # Number of counselors involved
 length(unique(FY16eval$se_volunteer_nid))
+length(unique(FY16eval$se_lead_counselor_nid))
 
 # Co-mentoring stats
 sum(FY16eval$se_morethanone_flag=="yes")
 sum(FY16eval$se_morethanone_flag=="no")
 
 # Mentoring sessions by chapter location
-aggregate(se_client_nid ~se_chapter_loc_name, FY16eval, function(x) length(unique(x)))
+se_loc <- aggregate(se_client_nid ~se_chapter_loc_name, FY16eval, function(x) length(unique(x)))
+se_loc <- se_loc[order(-se_loc$se_client_nid), ]
+se_loc
 
 # Mentoring sessions by session type
-aggregate(se_client_nid ~se_session_type, FY16eval, function(x) length(unique(x)))
+se_setype <- aggregate(se_client_nid ~se_session_type, FY16eval, function(x) length(unique(x)))
+se_setype <- se_setype[order(-se_setype$se_client_nid), ]
+se_setype
 
 # Mentoring sessions by counseling type
-aggregate(se_client_nid ~se_counseling_type, FY16eval, function(x) length(unique(x)))
+se_cnstype <- aggregate(se_client_nid ~se_counseling_type, FY16eval, function(x) length(unique(x)))
+se_cnstype <- se_cnstype[order(-se_cnstype$se_client_nid), ]
+se_cnstype
 
 # Number of sessions per unique client
-aggregate(se_nid ~se_client_nid, FY16eval, function(x) length(unique(x)))
-
-# Number of average mentoring hours per unique client
-aggregate(se_client_nid ~se_hours_spent, FY16eval, function(x) length(unique(x)))
-
-# Number of sessions by month
-aggregate(se_nid ~month_name, FY16eval, function(x) length(unique(x)))
-
-# Number of sessions by day of week
-aggregate(se_nid ~day_name_of_week, FY16eval, function(x) length(unique(x)))
+se_cl <- aggregate(se_nid ~se_client_nid, FY16eval, function(x) length(unique(x)))
+se_cl <- se_cl[order(-se_cl$se_nid), ]
+se_cl
 
 # Number of total mentoring hours by unique client
+hrs_cl <- aggregate(se_hours_spent_total ~se_client_nid, FY16eval, function(x) length(unique(x)))
+hrs_cl <- hrs_cl[order(-hrs_cl$se_hours_spent_total), ]
+hrs_cl
 
-# Number of sessons by unique client
+# Number of mentoring hours spent per unique client per session
+hrs_cl_se <- aggregate(se_client_nid ~se_hours_spent, FY16eval, function(x) length(unique(x)))
+hrs_cl_se <- hrs_cl_se[order(-hrs_cl_se$se_client_nid), ]
+hrs_cl_se
 
+# May want to show in chronological order
+# Number of sessions by month
+se_mo <- aggregate(se_nid ~month_name, FY16eval, function(x) length(unique(x)))
+se_mo <- se_mo[order(-se_mo$se_nid), ]
+se_mo
+
+# May want to show in week order (Mon - Sun)
+# Number of sessions by day of week
+se_dow <- aggregate(se_nid ~day_name_of_week, FY16eval, function(x) length(unique(x)))
+se_dow <- se_dow[order(-se_dow$se_nid), ]
+se_dow
 
 # ----- Client Demographic Stats -----
 
 # Unique client by state
-aggregate(se_client_nid ~cl_location_state, FY16eval, function(x) length(unique(x)))
+cl_st <- aggregate(se_client_nid ~cl_location_state, FY16eval, function(x) length(unique(x)))
+cl_st <- cl_st[order(-cl_st$se_client_nid), ]
+cl_st
 
 # Should filter zip code that is only 5 characters long
+FYzipFilter <- FY16eval[nchar(FY16eval$cl_location_zipcode)==5, ]
 # Unique client by zip code
-aggregate(se_client_nid ~cl_location_zipcode, FY16eval, function(x) length(unique(x)))
+cl_zip <- aggregate(se_client_nid ~cl_location_zipcode, FYzipFilter, function(x) length(unique(x)))
+cl_zip <- cl_zip[order(-cl_zip$se_client_nid), ]
+cl_zip
 
 # Unique client by gender
-aggregate(se_client_nid ~cl_gender, FY16eval, function(x) length(unique(x)))
+cl_mf <- aggregate(se_client_nid ~cl_gender, FY16eval, function(x) length(unique(x)))
+cl_mf <- cl_mf[order(-cl_mf$se_client_nid), ]
+cl_mf
 
 # Unique client by age
-aggregate(se_client_nid ~cl_age, FY16eval, function(x) length(unique(x)))
+cl_age <- aggregate(se_client_nid ~cl_age, FY16eval, function(x) length(unique(x)))
+cl_age <- cl_age[order(-cl_age$se_client_nid), ]
+cl_age
 
 # Unique client by race
-aggregate(se_client_nid ~cl_race, FY16eval, function(x) length(unique(x)))
+cl_rc <- aggregate(se_client_nid ~cl_race, FY16eval, function(x) length(unique(x)))
+cl_rc <- cl_rc[order(-cl_rc$se_client_nid), ]
+cl_rc
 
 # Unique client by Latino/Hispanic ethnicity
-aggregate(se_client_nid ~cl_ethnicity_value, FY16eval, function(x) length(unique(x)))
+cl_his <- aggregate(se_client_nid ~cl_ethnicity_value, FY16eval, function(x) length(unique(x)))
+cl_his <- cl_his[order(-cl_his$se_client_nid), ]
+cl_his
+
+# unique client by veteran status
+cl_vet <- aggregate(se_client_nid ~cl_military_value, FY16eval, function(x) length(unique(x)))
+cl_vet <- cl_vet[order(-cl_vet$se_client_nid), ]
+cl_vet
+
+# unique client by disability status
+cl_dis <- aggregate(se_client_nid ~cl_disability_value, FY16eval, function(x) length(unique(x)))
+cl_dis <- cl_dis[order(-cl_dis$se_client_nid), ]
+cl_dis
+
+# unique client by in-business flag
+cl_inb <- aggregate(se_client_nid ~cl_about_your_business_flag, FY16eval, function(x) length(unique(x)))
+cl_inb <- cl_inb[order(-cl_inb$se_client_nid), ]
+cl_inb
 
 # Unique client by business type
-aggregate(se_client_nid ~cl_business_type_desc, FY16eval, function(x) length(unique(x)))
+cl_btyp <- aggregate(se_client_nid ~cl_business_type_desc, FY16eval, function(x) length(unique(x)))
+cl_btyp <- cl_btyp[order(-cl_btyp$se_client_nid), ]
+cl_btyp
+
+# unique client by doing business online
+cl_onl <- aggregate(se_client_nid ~cl_online_value, FY16eval, function(x) length(unique(x)))
+cl_onl <- cl_onl[order(-cl_onl$se_client_nid), ]
+cl_onl
 
 # Unique client by home based business
-aggregate(se_client_nid ~cl_homebased_value, FY16eval, function(x) length(unique(x)))
+cl_hom <- aggregate(se_client_nid ~cl_homebased_value, FY16eval, function(x) length(unique(x)))
+cl_hom <- cl_hom[order(-cl_hom$se_client_nid), ]
+cl_hom
 
 # Unique client by legal entity
-aggregate(se_client_nid ~cl_legalentity_value, FY16eval, function(x) length(unique(x)))
+cl_ent <- aggregate(se_client_nid ~cl_legalentity_value, FY16eval, function(x) length(unique(x)))
+cl_ent <- cl_ent[order(-cl_ent$se_client_nid), ]
+cl_ent
 
 # Unique client by how they heard about SCORE
-temp <- aggregate(se_client_nid ~cl_hear_about_score_desc, FY16eval, function(x) length(unique(x)))
-temp
-temp <- temp[order(-temp$se_client_nid), ]
-temp
+cl_hear <- aggregate(se_client_nid ~cl_hear_about_score_desc, FY16eval, function(x) length(unique(x)))
+cl_hear <- cl_hear[order(-cl_hear$se_client_nid), ]
+cl_hear
 
 # dataset[, order(item)]
 
